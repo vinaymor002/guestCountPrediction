@@ -10,7 +10,7 @@ export default {
   xolaCore: {
     baseUrl: "http://xola.local",
     services: {
-      experiences: "/experiences"
+      experiences: "/api/experiences"
     }
   }
 };
