@@ -92,7 +92,7 @@ class ExperienceSelector extends Component {
     fetch(
       config.xolaCore.baseUrl +
         config.xolaCore.services.experiences +
-        "?seller=5a953f6d0bf8f2ed400041a8"
+        "?seller=570b5ff46864ea3e288b45f6"
     )
       .then(results => {
         return results.json();
@@ -109,7 +109,7 @@ class ExperienceSelector extends Component {
     return inputLength === 0
       ? []
       : this.experiences.filter(
-          lang => lang.name.toLowerCase().slice(0, inputLength) === inputValue
+          lang => lang.name.toLowerCase().indexOf(inputValue) !== -1
         );
   };
 

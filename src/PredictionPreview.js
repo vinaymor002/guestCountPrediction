@@ -5,50 +5,53 @@ import { Button } from "reactstrap";
 import config from "./config";
 import { Container, Row, Col, FormGroup, Input, Label } from "reactstrap";
 import moment from "moment";
+import axios from "axios";
+import PredcictionResult from "./PredictionResult";
+import PredictionResult from "./PredictionResult";
 
 class PredictionPreview extends Component {
   state = {
-    prediction: {}
+    prediction: {},
+    result: ""
   };
-  componentDidMount() {
+  client = axios.create({
+    baseURL: config.predictionService.baseUrl,
+    timeout: 1000
+  });
+
+  componentWillReceiveProps() {
     if (this.props.date) {
-      fetch(
-        config.predictionService.baseUrl +
+      this.client
+        .get(
           config.predictionService.services.predictionModel +
-          "/" +
-          this.props.experience.id
-      )
-        .then(results => {
-          return results.json();
+            "/" +
+            this.props.experience.id,
+          {
+            mode: "no-cors",
+            method: "HEAD"
+          }
+        )
+        .then(response => {
+          this.setState({ prediction: response.data });
         })
-        .then(data => {
-          this.experiences = data.data;
-          this.setState({ prediction: this.experiences });
+        .catch(error => {
+          this.setState({ prediction: { status: 0 } });
         });
     }
   }
-  componentDidUpdate() {
-    if (this.props.date) {
-      fetch(
-        config.predictionService.baseUrl +
-          config.predictionService.services.predictionModel +
-          "/" +
-          this.props.experience.id
-      )
-        .then(results => {
-          return results.json();
-        })
-        .then(data => {
-          this.experiences = data.data;
-          this.setState({ prediction: this.experiences });
-        });
-    }
-  }
+
   render() {
     let date = this.props.date;
-    console.log(date);
-    if (date) {
-      return <Row> PredictionPreview </Row>;
+    console.log(moment(0).format("h:mm a"));
+    if (date && (!this.state.prediction || this.state.prediction.status == 0)) {
+      return <Button className="btn btn-success"> Initiate Learning</Button>;
+    } else if (date && this.state.prediction.status == 1) {
+      return (
+        <PredictionResult
+          experience={this.props.experience}
+          date={this.props.date}
+        />
+      );
     }
     return "";
   }

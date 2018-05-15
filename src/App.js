@@ -22,9 +22,10 @@ class App extends Component {
 
   render() {
     return (
-      <Container>
-        <Row className="test">
+      <Container className="test">
+        <Row>
           <Col md="8">
+            <h2> Guest count prediction based on weather forecast </h2>
             <Row>
               <ExperienceSelector updateExperience={this.updateExperience} />
             </Row>
