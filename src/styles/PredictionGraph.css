@@ -1,0 +1,11 @@
+.prediction-graph-container {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 70px;
+}
+
+.prediction-graph-container h6 {
+  width: 100%;
+  text-align: left;
+  margin-top: 20px;
+}

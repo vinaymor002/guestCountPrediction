@@ -1,6 +1,6 @@
 export default {
   predictionService: {
-    baseUrl: "http://localhost:5000",
+    baseUrl: "http://localhost:4000",
     services: {
       predictionModel: "/prediction/model",
       predict: "/prediction/predict",

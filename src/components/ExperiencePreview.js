@@ -1,9 +1,6 @@
 import React, { Component } from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import { Button } from "reactstrap";
-import config from "./config";
-import { Container, Row, Col, FormGroup, Input, Label } from "reactstrap";
+import config from "../config";
+import { Row, Col, FormGroup, Input, Label } from "reactstrap";
 import moment from "moment";
 
 class ExperiencePreview extends Component {
