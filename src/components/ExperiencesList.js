@@ -73,7 +73,7 @@ class ExperiencesList extends Component {
           );
         }
       );
-      console.log(this.props.selectedExperience);
+
       var checked = selectedExperience.length > 0;
       var indoor = false;
       if (checked) {

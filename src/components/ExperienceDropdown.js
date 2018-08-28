@@ -87,7 +87,6 @@ class ExperienceDropdown extends Component {
 
   getSelectedExperiences = () => {
     var selectedExperiences = [];
-    console.log(this.state.selectedExperiences);
     for (var i = 0; i < this.state.selectedExperiences.length; i++) {
       selectedExperiences.push(
         <DropdownItem
@@ -120,7 +119,7 @@ class ExperienceDropdown extends Component {
       });
 
       if (foundExperience.length > 0) {
-        // self.updateSelectedExperience(experience);
+        self.updateSelectedExperience(experience);
       } else {
         self.createSelectedExperience(experience);
       }
@@ -129,11 +128,12 @@ class ExperienceDropdown extends Component {
   };
 
   updateSelectedExperience = selectedExperience => {
+    console.log(selectedExperience);
     this.client
       .mutate({
         variables: {
           experienceId: selectedExperience.id,
-          sellerId: selectedExperience.seller.id,
+          sellerId: this.props.sellerId,
           indoor: selectedExperience.indoor,
           isEnabled: selectedExperience.isEnabled
         },
@@ -144,7 +144,7 @@ class ExperienceDropdown extends Component {
             $indoor: Boolean
             $isEnabled: Boolean
           ) {
-            createExperience(
+            updateExperience(
               input: {
                 sellerId: $sellerId
                 experienceId: $experienceId
@@ -163,17 +163,17 @@ class ExperienceDropdown extends Component {
       })
       .then(response => {
         var experienceData = response.data.createExperience;
+        console.log(response);
       })
       .catch(error => console.error(error));
   };
 
   createSelectedExperience = selectedExperience => {
-    var self = this;
     this.client
       .mutate({
         variables: {
           experienceId: selectedExperience.id,
-          sellerId: selectedExperience.seller.id,
+          sellerId: this.props.sellerId,
           indoor: selectedExperience.indoor,
           isEnabled: true
         },
@@ -184,7 +184,7 @@ class ExperienceDropdown extends Component {
             $indoor: Boolean
             $isEnabled: Boolean
           ) {
-            updateExperience(
+            createExperience(
               input: {
                 sellerId: $sellerId
                 experienceId: $experienceId

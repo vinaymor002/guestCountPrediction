@@ -25,10 +25,7 @@ class App extends Component {
     const parsed = queryString.parse(window.location.hash);
     const apiKey = parsed.apiKey;
     const sellerId = parsed["?seller"];
-    this.setState({
-      sellerId: sellerId,
-      sellerApiKey: apiKey
-    });
+
     fetch(
       config.xolaCore.baseUrl +
         config.xolaCore.services.experiences +
@@ -40,19 +37,27 @@ class App extends Component {
       })
       .then(data => {
         this.experiences = data.data;
-        this.fetchAddedExperiences();
+        this.fetchAddedExperiences(sellerId);
+        this.setState({
+          sellerId: sellerId,
+          sellerApiKey: apiKey
+        });
       });
   }
 
-  fetchAddedExperiences = () => {
+  fetchAddedExperiences = sellerId => {
     var client = new ApolloClient({
       uri: config.predictionService.baseUrl
     });
+
     client
       .query({
+        variables: {
+          sellerId: sellerId
+        },
         query: gql`
-          query Experience {
-            experiences(sellerId: "570b5ff46864ea3e288b45f6") {
+          query Experience($sellerId: String) {
+            experiences(sellerId: $sellerId) {
               experienceId
               indoor
               isTrained
@@ -118,6 +123,7 @@ class App extends Component {
                 experiences={this.state.experiences}
                 selectedExperiences={this.state.selectedExperiences}
                 updateSelectedExperiences={this.fetchAddedExperiences}
+                sellerId={this.state.sellerId}
               />
             </Col>
           </Row>
