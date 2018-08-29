@@ -26,7 +26,7 @@ class PredictionPreview extends Component {
     var client = new ApolloClient({
       uri: config.predictionService.baseUrl
     });
-    console.log("THIS PROPS", this.props);
+
     if (this.props) {
       var experienceId = this.props.experience.id;
       client
