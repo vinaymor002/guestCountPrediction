@@ -2,3 +2,24 @@
   width: 800px;
   margin: 40px auto;
 }
+
+.weather-icon-test i {
+  font-size: 45px;
+}
+
+.timeline-item-header {
+  padding: 12px;
+}
+
+.cancelation-count {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .col-md-1 {
+    text-align: center;
+    -ms-flex: 0 0 8.333333%;
+    flex: 0 0 12.333333%;
+    max-width: 12.333333%;
+  }
+}

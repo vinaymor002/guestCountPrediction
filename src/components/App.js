@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/App.css";
-import config from "../config";
 import { Container, Row, Col } from "reactstrap";
 import ExperienceDropdown from "./ExperienceDropdown";
 // import ExperiencePreview from "./ExperiencePreview";
@@ -27,8 +26,8 @@ class App extends Component {
     const sellerId = parsed["?seller"];
 
     fetch(
-      config.xolaCore.baseUrl +
-        config.xolaCore.services.experiences +
+      process.env.REACT_APP_XOLA_CORE_URL +
+        process.env.REACT_APP_XOLA_CORE_EXPERIENCES_API +
         "?seller=" +
         sellerId
     )
@@ -47,7 +46,7 @@ class App extends Component {
 
   fetchAddedExperiences = sellerId => {
     var client = new ApolloClient({
-      uri: config.predictionService.baseUrl
+      uri: process.env.REACT_APP_PREDICTION_SERVICE_URL
     });
 
     client
@@ -67,7 +66,20 @@ class App extends Component {
         `
       })
       .then(response => {
-        this.selectedExperiences = response.data.experiences;
+        var selectedExperiences = response.data.experiences;
+        this.selectedExperiences = [];
+
+        for (var i = 0; i < selectedExperiences.length; i++) {
+          var experience = this.experiences.filter(experience => {
+            return experience.id === selectedExperiences[i].experienceId;
+          });
+
+          if (selectedExperiences[i].isEnabled) {
+            experience[0].isEnabled = true;
+            this.selectedExperiences.push(experience[0]);
+          }
+        }
+
         this.setState({
           loading: false,
           selectedExperiences: this.selectedExperiences,
@@ -124,6 +136,7 @@ class App extends Component {
                 selectedExperiences={this.state.selectedExperiences}
                 updateSelectedExperiences={this.fetchAddedExperiences}
                 sellerId={this.state.sellerId}
+                apiKey={this.state.sellerApiKey}
               />
             </Col>
           </Row>

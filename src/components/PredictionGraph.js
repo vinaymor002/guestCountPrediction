@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import config from "../config";
-import { Row, Col, FormGroup, Input, Label } from "reactstrap";
 import chartkick from "chart.js";
 import { AreaChart } from "react-chartkick";
 import "../styles/PredictionGraph.css";
@@ -8,20 +6,29 @@ import moment from "moment";
 class PredictionGraph extends Component {
   formatData(data) {
     var graphData = {};
+    var graphData2 = {};
+    var graphData3 = {};
     for (var i = 0; i < data.length; i++) {
       graphData[data[i]["timestamp"]] = data[i]["prediction"];
+      graphData2[data[i]["timestamp"]] = data[i]["prediction"] + 15;
+      graphData3[data[i]["timestamp"]] = Math.floor(Math.random() * 10 + 1);
     }
 
-    return graphData;
+    return [
+      { name: "Cancellation Prediction", data: graphData },
+      { name: "Per Outing Maximum", data: graphData2 },
+      { name: "Guest Count Booked", data: graphData3 }
+    ];
   }
 
   render() {
     let data = [];
-    var date = moment(Date.now());
-    for (var i = 1; i <= 24; i++) {
+
+    for (var i = 0; i < 24; i++) {
+      var time = moment.unix(this.props.hourlyPredictions[i].time);
       data.push({
-        timestamp: date.add(1, "Hours").format("h A"),
-        prediction: Math.floor(Math.random() * 20 + 1)
+        timestamp: time.format("h A"),
+        prediction: this.props.hourlyPredictions[i].guestCount
       });
     }
 
@@ -32,8 +39,11 @@ class PredictionGraph extends Component {
         </div>
         <div>
           <AreaChart
+            legend="bottom"
+            xtitle="Time"
+            ytitle="Number of cancelations"
             width="800px"
-            colors={["#ff4400"]}
+            colors={["#ff4400", null, "blue"]}
             data={this.formatData(data)}
           />
         </div>

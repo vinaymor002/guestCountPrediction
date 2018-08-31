@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import config from "../config";
-import Autosuggest from "react-autosuggest";
+
 import "../styles/ExperienceSelector.css";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import matchSorter from "match-sorter";
@@ -13,8 +12,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Input,
-  InputGroup,
-  InputGroupAddon
+  InputGroup
 } from "reactstrap";
 import ExperienceSelectorModal from "./ExperienceSelectorModal";
 
@@ -22,7 +20,7 @@ class ExperienceDropdown extends Component {
   constructor(props) {
     super(props);
     this.client = new ApolloClient({
-      uri: config.predictionService.baseUrl
+      uri: process.env.REACT_APP_PREDICTION_SERVICE_URL
     });
     this.toggle = this.toggle.bind(this);
     this.state = {
@@ -35,20 +33,7 @@ class ExperienceDropdown extends Component {
   }
 
   componentDidMount() {
-    var selectedExperiences = [];
-    for (var i = 0; i < this.props.selectedExperiences.length; i++) {
-      var experience = _.where(this.props.experiences, {
-        id: this.props.selectedExperiences[i].experienceId
-      });
-      if (this.props.selectedExperiences[i].isEnabled) {
-        selectedExperiences.push({
-          ...experience[0],
-          ...this.props.selectedExperiences[i]
-        });
-      }
-    }
-
-    this.setState({ selectedExperiences: selectedExperiences });
+    this.setState({ selectedExperiences: this.props.selectedExperiences });
   }
 
   toggle(event) {
@@ -87,6 +72,7 @@ class ExperienceDropdown extends Component {
 
   getSelectedExperiences = () => {
     var selectedExperiences = [];
+
     for (var i = 0; i < this.state.selectedExperiences.length; i++) {
       selectedExperiences.push(
         <DropdownItem
@@ -97,9 +83,9 @@ class ExperienceDropdown extends Component {
               ? "active"
               : ""
           }
-          id={this.props.experiences[i].id}
+          id={this.props.selectedExperiences[i].id}
         >
-          {this.props.experiences[i].name}
+          {this.props.selectedExperiences[i].name}
         </DropdownItem>
       );
     }
@@ -169,20 +155,23 @@ class ExperienceDropdown extends Component {
   };
 
   createSelectedExperience = selectedExperience => {
+    console.log(this.props.apiKey, "API KEY");
     this.client
       .mutate({
         variables: {
           experienceId: selectedExperience.id,
           sellerId: this.props.sellerId,
           indoor: selectedExperience.indoor,
-          isEnabled: true
+          isEnabled: true,
+          apiKey: this.props.apiKey
         },
         mutation: gql`
-          mutation ExperienceUpdate(
+          mutation ExperienceCreate(
             $experienceId: String
             $sellerId: String
             $indoor: Boolean
             $isEnabled: Boolean
+            $apiKey: String
           ) {
             createExperience(
               input: {
@@ -191,6 +180,7 @@ class ExperienceDropdown extends Component {
                 indoor: $indoor
                 isEnabled: $isEnabled
               }
+              apiKey: $apiKey
             ) {
               _id
               experienceId

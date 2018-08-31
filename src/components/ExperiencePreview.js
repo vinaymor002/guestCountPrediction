@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import config from "../config";
+
 import { Row, Col, FormGroup, Input, Label } from "reactstrap";
 import moment from "moment";
 
@@ -14,7 +14,7 @@ class ExperiencePreview extends Component {
     let experience = this.props.experience;
     let imageUrl;
     if (experience) {
-      imageUrl = config.xolaCore.baseUrl + experience.photo.src;
+      imageUrl = process.env.REACT_APP_XOLA_CORE_URL + experience.photo.src;
     }
     let dates = [
       moment()
