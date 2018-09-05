@@ -25,12 +25,12 @@ class ExperienceSelectorModal extends Component {
     });
   }
 
-  updateSelectedExperiences = selectedExperiences => {
-    this.selectedExperiences = selectedExperiences;
+  updateSelectedExperiences = experiences => {
+    this.experiences = experiences;
   };
 
   onSubmit = () => {
-    this.props.updateSelectedExperiences(this.selectedExperiences);
+    this.props.updateSelectedExperiences(this.experiences);
   };
 
   render() {

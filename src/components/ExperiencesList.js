@@ -10,79 +10,61 @@ class ExperiencesList extends Component {
   }
 
   componentDidMount() {
-    console.log("HERE", this.props.selectedExperiences);
-    this.setState({ selectedExperiences: this.props.selectedExperiences });
+    this.setState({ experiences: this.props.experiences });
   }
 
   onCheckExperienceChange = event => {
-    var selectedExperiences = this.state.selectedExperiences;
-
-    var selectedExperience = selectedExperiences.filter(selectedExperience => {
-      return selectedExperience.id === event.currentTarget.id;
+    var experiences = this.props.experiences;
+    var experience = experiences.filter(experience => {
+      return experience.id === event.currentTarget.getAttribute("experience");
     });
-
-    if (selectedExperience.length > 0) {
-      selectedExperiences[
-        selectedExperiences.indexOf(selectedExperience[0])
-      ].isEnabled = false;
-    } else {
-      selectedExperiences.push({
-        id: event.currentTarget.id,
-        indoor: false,
-        isEnabled: true
-      });
-    }
-    this.setState({ selectedExperiences: selectedExperiences });
-    this.props.updateSelectedExperiences(selectedExperiences);
+    experiences[experiences.indexOf(experience[0])].isEnabled =
+      event.target.checked;
+    this.setState({ experiences: experiences });
   };
 
   onOutdoorChange = event => {
-    var selectedExperiences = this.state.selectedExperiences;
-    var experience = selectedExperiences.filter(experience => {
+    var experiences = this.state.experiences;
+    var experience = experiences.filter(experience => {
       return experience.id === event.currentTarget.getAttribute("experience");
     });
     if (experience.length > 0) {
-      var index = selectedExperiences.indexOf(experience[0]);
-      selectedExperiences[index].indoor = false;
-      this.setState({ selectedExperiences: selectedExperiences });
-      this.props.updateSelectedExperiences(selectedExperiences);
+      var index = experiences.indexOf(experience[0]);
+      experiences[index].indoor = false;
+      this.setState({ experiences: experiences });
+      // this.props.updateSelectedExperiences(experiences);
     }
   };
 
   onIndoorChange = event => {
-    var selectedExperiences = this.state.selectedExperiences;
-    var experience = selectedExperiences.filter(experience => {
+    var experiences = this.state.experiences;
+    var experience = experiences.filter(experience => {
       return experience.id === event.currentTarget.getAttribute("experience");
     });
     if (experience.length > 0) {
-      var index = selectedExperiences.indexOf(experience[0]);
-      selectedExperiences[index].indoor = true;
-      this.setState({ selectedExperiences: selectedExperiences });
-      this.props.updateSelectedExperiences(selectedExperiences);
+      var index = experiences.indexOf(experience[0]);
+      experiences[index].indoor = true;
+      this.setState({ experiences: experiences });
+      // this.props.updateSelectedExperiences(selectedExperiences);
     }
   };
 
   getExperiences = () => {
     var experiences = [];
     for (var i = 0; i < this.props.experiences.length; i++) {
-      var selectedExperience = this.state.selectedExperiences.filter(
-        selectedExperience => {
-          return (
-            selectedExperience.id === this.props.experiences[i].id &&
-            selectedExperience.isEnabled
-          );
-        }
-      );
-
-      var checked = selectedExperience.length > 0;
+      let checked = this.props.experiences[i].isEnabled;
+      if (!checked) {
+        checked = false;
+      }
       var indoor = false;
       if (checked) {
-        indoor = selectedExperience[0].indoor;
+        indoor = this.props.experiences[i].indoor;
       }
       experiences.push(
         <tr>
           <th scope="row">
             <Input
+              experience={this.props.experiences[i].id}
               type="checkbox"
               id={this.props.experiences[i].id}
               checked={checked}

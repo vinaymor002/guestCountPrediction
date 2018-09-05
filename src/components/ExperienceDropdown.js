@@ -73,21 +73,22 @@ class ExperienceDropdown extends Component {
   getSelectedExperiences = () => {
     var selectedExperiences = [];
 
-    for (var i = 0; i < this.state.selectedExperiences.length; i++) {
-      selectedExperiences.push(
-        <DropdownItem
-          key={this.state.selectedExperiences[i].id}
-          className={
-            this.state.selectedExperience ===
-            this.state.selectedExperiences[i].id
-              ? "active"
-              : ""
-          }
-          id={this.props.selectedExperiences[i].id}
-        >
-          {this.props.selectedExperiences[i].name}
-        </DropdownItem>
-      );
+    for (var i = 0; i < this.props.experiences.length; i++) {
+      if (this.props.experiences[i].isEnabled) {
+        selectedExperiences.push(
+          <DropdownItem
+            key={this.props.experiences[i].id}
+            className={
+              this.state.selectedExperience === this.props.experiences[i].id
+                ? "active"
+                : ""
+            }
+            id={this.props.experiences[i].id}
+          >
+            {this.props.experiences[i].name}
+          </DropdownItem>
+        );
+      }
     }
     return selectedExperiences;
   };
@@ -99,16 +100,9 @@ class ExperienceDropdown extends Component {
       var originalExperience = _.where(self.props.experiences, {
         id: experience.id
       });
-      experience = { ...experience, ...originalExperience[0] };
-      var foundExperience = _.where(self.props.selectedExperiences, {
-        experienceId: experience.id
-      });
-
-      if (foundExperience.length > 0) {
-        self.updateSelectedExperience(experience);
-      } else {
-        self.createSelectedExperience(experience);
-      }
+      // if (originalExperience.isEnabled) {
+      //   self.updateSelectedExperience(experience);
+      // }
     });
     this.setState({ selectedExperiences: selectedExperiences });
   };

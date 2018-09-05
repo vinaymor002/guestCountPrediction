@@ -73,16 +73,14 @@ class App extends Component {
           var experience = this.experiences.filter(experience => {
             return experience.id === selectedExperiences[i].experienceId;
           });
-
-          if (selectedExperiences[i].isEnabled) {
-            experience[0].isEnabled = true;
-            this.selectedExperiences.push(experience[0]);
-          }
+          this.experiences[this.experiences.indexOf(experience[0])] = {
+            ...experience[0],
+            ...selectedExperiences[i]
+          };
         }
 
         this.setState({
           loading: false,
-          selectedExperiences: this.selectedExperiences,
           experiences: this.experiences
         });
       })
