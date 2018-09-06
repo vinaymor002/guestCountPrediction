@@ -8,7 +8,6 @@ import { RingLoader } from "react-spinners";
 import PredictionPreview from "./PredictionPreview";
 import ApolloClient from "apollo-boost";
 import gql from "graphql-tag";
-import queryString from "query-string";
 
 class App extends Component {
   state = {
@@ -21,9 +20,9 @@ class App extends Component {
   };
 
   componentDidMount() {
-    const parsed = queryString.parse(window.location.hash);
-    const apiKey = parsed.apiKey;
-    const sellerId = parsed["?seller"];
+    let params = (new URL(document.location)).searchParams;
+    let sellerId = params.get('seller');
+    let apiKey = params.get('apiKey');
 
     fetch(
       process.env.REACT_APP_XOLA_CORE_URL +
