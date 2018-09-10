@@ -70,41 +70,36 @@ class ExperienceDropdown extends Component {
     }
   };
 
-  getSelectedExperiences = () => {
-    var selectedExperiences = [];
-
-    for (var i = 0; i < this.props.experiences.length; i++) {
-      if (this.props.experiences[i].isEnabled) {
-        selectedExperiences.push(
-          <DropdownItem
-            key={this.props.experiences[i].id}
-            className={
-              this.state.selectedExperience === this.props.experiences[i].id
-                ? "active"
-                : ""
-            }
-            id={this.props.experiences[i].id}
-          >
-            {this.props.experiences[i].name}
-          </DropdownItem>
-        );
-      }
-    }
-    return selectedExperiences;
+  dropdownItems = () => {
+    return this.getSelectedExperiences().map(experience => {
+      return <DropdownItem key={experience.id} className={this.isActive(experience) ? "active" : ""} id={experience.id}>
+        {experience.name}
+      </DropdownItem>
+    }, this);
   };
 
-  updateSelectedExperiences = selectedExperiences => {
-    var self = this;
+  isActive(experience) {
+    return this.state.selectedExperience === experience.id;
+  }
 
-    _.each(selectedExperiences, function(experience) {
-      var originalExperience = _.where(self.props.experiences, {
-        id: experience.id
-      });
-      // if (originalExperience.isEnabled) {
-      //   self.updateSelectedExperience(experience);
-      // }
+  getSelectedExperiences = () => {
+    return this.props.experiences.filter(experience => {
+      return experience.isEnabled;
     });
-    this.setState({ selectedExperiences: selectedExperiences });
+  };
+
+  updateSelectedExperiences = experiences => {
+    let self = this;
+
+    _.each(experiences, experience => {
+      if (experience._id) {
+        self.updateSelectedExperience(experience)
+      } else if (experience.isEnabled) {
+        self.createSelectedExperience(experience)
+      }
+    });
+
+    // this.setState({ selectedExperiences: selectedExperiences });
   };
 
   updateSelectedExperience = selectedExperience => {
@@ -118,7 +113,7 @@ class ExperienceDropdown extends Component {
           isEnabled: selectedExperience.isEnabled
         },
         mutation: gql`
-          mutation ExperienceCreate(
+          mutation ExperienceUpdate(
             $experienceId: String
             $sellerId: String
             $indoor: Boolean
@@ -186,7 +181,7 @@ class ExperienceDropdown extends Component {
         `
       })
       .then(response => {
-        var experienceData = response.data.createExperience;
+        let experienceData = response.data.createExperience;
       })
       .catch(error => console.error(error));
   };
@@ -195,25 +190,24 @@ class ExperienceDropdown extends Component {
     return (
       <div className="experience-selector-container">
         <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+
           <DropdownToggle outline={true} color="secondary" caret>
             {this.state.selectedExperienceName}
           </DropdownToggle>
+
           <DropdownMenu>
             <DropdownItem disabled>
               <InputGroup>
                 <FaSearch />
-                <Input
-                  onKeyUp={this.searchExperience}
-                  placeholder="Search For Listing"
-                />
+                <Input onKeyUp={this.searchExperience} placeholder="Search For Listing"/>
               </InputGroup>
             </DropdownItem>
-            {this.getSelectedExperiences()}
+
+            {this.dropdownItems()}
+
             <DropdownItem divider />
-            <DropdownItem id="showModal">
-              <FaPlus size={15} /> {""}
-              Add Listing
-            </DropdownItem>
+
+            <DropdownItem id="showModal"><FaPlus size={15} /> {""}Add Listing</DropdownItem>
           </DropdownMenu>
         </ButtonDropdown>
         {(() => {

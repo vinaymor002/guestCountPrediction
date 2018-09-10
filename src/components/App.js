@@ -8,6 +8,7 @@ import { RingLoader } from "react-spinners";
 import PredictionPreview from "./PredictionPreview";
 import ApolloClient from "apollo-boost";
 import gql from "graphql-tag";
+import _ from "underscore";
 
 class App extends Component {
   state = {
@@ -23,6 +24,10 @@ class App extends Component {
     let params = (new URL(document.location)).searchParams;
     let sellerId = params.get('seller');
     let apiKey = params.get('apiKey');
+    this.setState({
+      sellerId: sellerId,
+      sellerApiKey: apiKey
+    });
 
     fetch(
       process.env.REACT_APP_XOLA_CORE_URL +
@@ -34,28 +39,25 @@ class App extends Component {
         return results.json();
       })
       .then(data => {
-        this.experiences = data.data;
-        this.fetchAddedExperiences(sellerId);
-        this.setState({
-          sellerId: sellerId,
-          sellerApiKey: apiKey
-        });
+        this.xolaExperiences = data.data;
+        this.fetchRegisteredExperiences(sellerId);
       });
   }
 
-  fetchAddedExperiences = sellerId => {
-    var client = new ApolloClient({
+  fetchRegisteredExperiences = sellerId => {
+    let self = this
+    let client = new ApolloClient({
       uri: process.env.REACT_APP_PREDICTION_SERVICE_URL
     });
 
-    client
-      .query({
+    client.query({
         variables: {
           sellerId: sellerId
         },
         query: gql`
           query Experience($sellerId: String) {
             experiences(sellerId: $sellerId) {
+              _id
               experienceId
               indoor
               isTrained
@@ -65,22 +67,20 @@ class App extends Component {
         `
       })
       .then(response => {
-        var selectedExperiences = response.data.experiences;
-        this.selectedExperiences = [];
+        let registeredExperiences = response.data.experiences;
 
-        for (var i = 0; i < selectedExperiences.length; i++) {
-          var experience = this.experiences.filter(experience => {
-            return experience.id === selectedExperiences[i].experienceId;
-          });
-          this.experiences[this.experiences.indexOf(experience[0])] = {
-            ...experience[0],
-            ...selectedExperiences[i]
-          };
-        }
+        let experiences = self.xolaExperiences.map(xolaExperience => {
+          let experience = {name: xolaExperience.name, id: xolaExperience.id};
+          let registeredExperience = _.findWhere(registeredExperiences, {experienceId: xolaExperience.id});
+          if (registeredExperience) {
+            experience = _.extend(experience, registeredExperience);
+          }
+          return experience;
+        });
 
         this.setState({
           loading: false,
-          experiences: this.experiences
+          experiences: experiences
         });
       })
       .catch(error => console.error(error));
@@ -92,7 +92,7 @@ class App extends Component {
   };
 
   selectExperience = expId => {
-    var experience = this.state.experiences.filter(exp => {
+    let experience = this.state.experiences.filter(exp => {
       return exp.id === expId;
     })[0];
     this.setState({ experience: experience });
@@ -131,7 +131,7 @@ class App extends Component {
                 updateLoadingState={this.updateLoadingState}
                 experiences={this.state.experiences}
                 selectedExperiences={this.state.selectedExperiences}
-                updateSelectedExperiences={this.fetchAddedExperiences}
+                updateSelectedExperiences={this.fetchRegisteredExperiences}
                 sellerId={this.state.sellerId}
                 apiKey={this.state.sellerApiKey}
               />

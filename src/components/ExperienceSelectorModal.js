@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import {
   Modal,
   ModalBody,
@@ -30,36 +30,27 @@ class ExperienceSelectorModal extends Component {
   };
 
   onSubmit = () => {
-    this.props.updateSelectedExperiences(this.experiences);
+    this.props.updateSelectedExperiences(this.props.experiences);
+    this.toggle();
   };
 
   render() {
     return (
-      <Modal
-        isOpen={this.state.modal}
-        toggle={this.toggle}
-        className={this.props.className}
-      >
+      <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
         <ModalHeader toggle={this.toggle}>SELECT LISTINGS </ModalHeader>
+
         <ModalBody>
-          <p>
-            Select listings for which you want to create training models for
-            predictions.
-          </p>
+          <p>Select listings for which you want to create training models for predictions.</p>
           <Alert color="warning">Training models will take few minutes.</Alert>
           <ExperiencesList
             selectedExperiences={this.props.selectedExperiences}
             experiences={this.props.experiences}
-            updateSelectedExperiences={this.updateSelectedExperiences}
-          />
+            updateSelectedExperiences={this.updateSelectedExperiences}/>
         </ModalBody>
+
         <ModalFooter>
-          <Button color="secondary" onClick={this.toggle}>
-            Cancel
-          </Button>{" "}
-          <Button color="success" onClick={this.onSubmit}>
-            Submit
-          </Button>
+          <Button color="secondary" onClick={this.toggle}>Cancel</Button>{" "}
+          <Button color="success" onClick={this.onSubmit}>Submit</Button>
         </ModalFooter>
       </Modal>
     );
